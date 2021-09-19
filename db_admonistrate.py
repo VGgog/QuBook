@@ -1,16 +1,11 @@
-
+from connection import connect
 
 import psycopg2
 
 
 class DateBaseA:
     def __init__(self):
-        connection = psycopg2.connect(
-            database="QuoBook",
-            user="postgres",
-            password="fake_password",
-            host="127.0.0.1",
-            port="5432")
+        connection = psycopg2.connect(connect)
         self.cursor = connection.cursor()
 
     def read_quotes_in_table(self, quote_id):
