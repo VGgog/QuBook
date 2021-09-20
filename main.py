@@ -3,6 +3,7 @@ import flask
 from flask import request, jsonify
 
 from db_admonistrate import DateBaseA
+from Functions import give_a_nice_quote, return_list_result, return_sorted_quotes
 
 db = DateBaseA()
 
@@ -17,55 +18,47 @@ def home():
     return "<h1>Hello World!<h1>"
 
 
-@app.route('/api/random', methods=['GET'])
-def return_a_random_quote():
-    """Выдаёт случайную цитату из таблицы QuoBook"""
-    return jsonify(db.read_quotes_in_table(random.randint(1, db.count_id())))
-
-
-@app.route('/api/v1', methods=['GET'])
+@app.route('/api', methods=['GET'])
 def returns_a_specific_quote():
     """Возвращает определённую цитату, которую задал пользователь"""
-    author = None
-    quote_id = None
-    #bar = request.args.to_dict()
-
-    if 'id' in request.args:
-        quote_id = int(request.args['id'])
-        return jsonify(db.read_quotes_in_table(quote_id))
-
-    else:
-        if request.args.get('count'):
+    if request.args.get('count'):
+        # Определяет количество цитат, которые нужны пользователю
+        try:
             count = int(request.args['count'])
-        else:
-            count = 1
-
-        if request.args.get('author'):
-            author = request.args['author']
-        else:
-            author = None
-
-        if request.args.get('book_title'):
-            book_title = request.args['book_title']
-        else:
-            book_title = None
-
-        print(count)
-        print(author)
-        print(book_title)
-
-
-    '''
-    if 'id' in request.args:
-        quote_id = int(request.args['id'])
-    elif 'author' in request.args:
-        author = request.args['author']
+        except ValueError:
+            return 'Error'
     else:
-        return "error"
-    if author:
-        print(author)
-    return jsonify(db.read_quotes_in_table(quote_id))
-    '''
-    return 'sacessful', 200
+        count = 1
+
+    if 'id' in request.args:
+        # Возвращает цитату по id
+        try:
+            quote_id = int(request.args['id'])
+        except ValueError:
+            return 'Error'
+
+        if quote_id <= db.count_id():
+            return jsonify(give_a_nice_quote(db.read_quotes_in_table(quote_id))), 200
+        else:
+            return 'Error, quote not found', 404
+
+    elif 'author' in request.args:
+        # Возвращает отсортированные по автору цитаты
+        author = request.args.get('author')
+        return return_list_result(return_sorted_quotes(count, author, index=1))
+
+    elif 'book_title' in request.args:
+        # Возвращает отсортированные по названию книги цитаты
+        book_title = request.args.get('book_title')
+        return return_list_result(return_sorted_quotes(count, book_title, index=2))
+
+    else:
+        # Возвращает случайные цитаты(количество задаёт пользователь)
+        quotes = []
+        while len(quotes) < count:
+            quotes.append(give_a_nice_quote(db.read_quotes_in_table(random.randint(1, db.count_id()))))
+
+        return return_list_result(quotes)
+
 
 app.run()
