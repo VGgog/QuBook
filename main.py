@@ -23,6 +23,7 @@ def returns_a_specific_quote():
     """Возвращает определённую цитату, которую задал пользователь"""
     if request.args.get('count'):
         # Определяет количество цитат, которые нужны пользователю
+
         try:
             count = int(request.args['count'])
         except ValueError:
@@ -59,6 +60,24 @@ def returns_a_specific_quote():
             quotes.append(give_a_nice_quote(db.read_quotes_in_table(random.randint(1, db.count_id()))))
 
         return return_list_result(quotes)
+
+
+@app.route('/api/post_json', methods=['POST'])
+def requests_json():
+    request_data = request.get_json()
+
+    if 'author' and 'book_title' and 'quote' in request_data:
+        author = request_data['author']
+        book_title = request_data['book_title']
+        quote = request_data['quote']
+
+        return {
+            'author': author,
+            'boo_title': book_title,
+            'quote': quote
+        }
+    
+    return "Error"
 
 
 app.run()
