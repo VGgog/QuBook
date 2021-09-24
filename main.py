@@ -64,20 +64,31 @@ def returns_a_specific_quote():
 
 @app.route('/api/post_json', methods=['POST'])
 def requests_json():
-    request_data = request.get_json()
+    requests_data = request.get_json()
 
-    if 'author' and 'book_title' and 'quote' in request_data:
+    if 'author' and 'book_title' and 'quote' in requests_data[0]:
+        '''
         author = request_data['author']
         book_title = request_data['book_title']
         quote = request_data['quote']
+        '''
+        #db.write_new_quote_on_table(count=db.count_id() + 1, quot=request_data)
+        try:
+            for request_data in requests_data:
+                db.write_new_quote_on_table(count=db.count_id() + 1, quot=request_data)
+        except Exception as e:
+            print(e)
 
-        return {
+
+        '''
+        return { 
             'author': author,
-            'boo_title': book_title,
+            'book_title': book_title,
             'quote': quote
-        }
-    
+        }'''
+        return 'sucessful'
     return "Error"
+
 
 
 app.run()
