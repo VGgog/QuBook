@@ -18,7 +18,7 @@ def home():
     return "<h1>Hello World!<h1>"
 
 
-@app.route('/api', methods=['GET'])
+@app.route('/api/quobook', methods=['GET'])
 def returns_a_specific_quote():
     """Возвращает определённую цитату, которую задал пользователь"""
     if request.args.get('count'):
@@ -62,32 +62,38 @@ def returns_a_specific_quote():
         return return_list_result(quotes)
 
 
-@app.route('/api/post_json', methods=['POST'])
+@app.route('/api/quobook/new', methods=['POST'])
 def requests_json():
     """POST метод, записывает цитату, отправленную пользователем в таблицу QuoBook"""
     request_data = request.get_json()
 
     if 'Author' and 'Book title' and 'Quote' in request_data:
-
         request_data.setdefault('ID', db.count_id() + 1)
         db.write_new_quote_on_table(request_data)
-
         return give_a_nice_quote(request_data), 200
 
     return "Error, quote not write in db table"
 
 
-@app.route('/api/del_quote', methods=['DELETE'])
+@app.route('/api/quobook/del', methods=['DELETE'])
 def delete_a_quote():
-    """"""
+    """DELETE-methods, удаляет цитату по id"""
     if 'id' in request.args:
-        quote_id = request.args.get('id')
-        if quote_id:
-            db.delete_quote(quote_id)
-            return "Delete successful"
-        return "Error"
-    return "Error"
+        # Возвращает цитату по id
+        try:
+            quote_id = int(request.args['id'])
+        except ValueError:
+            return 'Error'
 
+        try:
+            quote = give_a_nice_quote(db.read_quotes_in_table(quote_id))
+            db.delete_quote(quote_id)
+        except (TypeError, IndexError):
+            return "Error, this quote not found"
+
+        return quote
+
+    return "Error, quote not found"
 
 
 app.run()
