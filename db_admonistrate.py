@@ -5,12 +5,12 @@ import psycopg2
 
 class DateBaseA:
     def __init__(self):
-        connection = psycopg2.connect(database="QuoBook",
+        self.connection = psycopg2.connect(database="QuoBook",
                                       user="postgres",
                                       password=connect,
                                       host="127.0.0.1",
                                       port="5432")
-        self.cursor = connection.cursor()
+        self.cursor = self.connection.cursor()
 
     def read_quotes_in_table(self, quote_id):
         """Возвращает строку из таблицы QueBook"""
@@ -19,15 +19,17 @@ class DateBaseA:
 
     def write_new_quote_on_table(self, count, quot):
         """Записывает новую цитату в таблицу QueBook"""
-        return self.cursor.execute("""INSERT INTO QuoBook(id, author, "book name", quote) VALUES (%s, %s, %s, %s)""",
-                                   (count, quot['author'], quot['book_title'], quot['quote']))
+        self.cursor.execute("""INSERT INTO QuoBook(id, author, "book name", quote) VALUES (%s, %s, %s, %s)""",
+                                   (count, quot['Author'], quot['Book title'], quot['Quote']))
+        return self.connection.commit()
 
     def change_quote_in_table(self):
         pass
 
-    def delete_quote(self):
+    def delete_quote(self, quote_id):
         """Удаляет нужную строку из таблицы QueBook"""
-        pass
+        self.cursor.execute("DELETE FROM QuoBook WHERE QuoBook.Id = %s", (quote_id,))
+        return self.connection.commit()
 
     def count_id(self):
         """Выводит количество строк в таблицу QuoBook"""

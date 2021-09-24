@@ -64,29 +64,30 @@ def returns_a_specific_quote():
 
 @app.route('/api/post_json', methods=['POST'])
 def requests_json():
-    requests_data = request.get_json()
+    request_data = request.get_json()
 
-    if 'author' and 'book_title' and 'quote' in requests_data[0]:
-        '''
-        author = request_data['author']
-        book_title = request_data['book_title']
-        quote = request_data['quote']
-        '''
+    if 'Author' and 'Book title' and 'Quote' in request_data:
         #db.write_new_quote_on_table(count=db.count_id() + 1, quot=request_data)
         try:
-            for request_data in requests_data:
-                db.write_new_quote_on_table(count=db.count_id() + 1, quot=request_data)
+            db.write_new_quote_on_table(294, quot=request_data)
+            print(2)
         except Exception as e:
             print(e)
+            print(1)
+        request_data.setdefault('ID', 294)
+        return give_a_nice_quote(request_data)
+    return "Error"
 
 
-        '''
-        return { 
-            'author': author,
-            'book_title': book_title,
-            'quote': quote
-        }'''
-        return 'sucessful'
+@app.route('/api/del_quote', methods=['DELETE'])
+def delete_a_quote():
+    """"""
+    if 'id' in request.args:
+        quote_id = request.args.get('id')
+        if quote_id:
+            db.delete_quote(quote_id)
+            return "Delete successful"
+        return "Error"
     return "Error"
 
 

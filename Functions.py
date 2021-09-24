@@ -8,11 +8,21 @@ db = DateBaseA()
 
 def give_a_nice_quote(info_for_quote):
     """Возвращает цитату в виде списка"""
-    return {'ID': info_for_quote[0],
-            'Author': info_for_quote[1],
-            'Book title': info_for_quote[2],
-            'Quote': info_for_quote[3]
-            }
+    if type(info_for_quote) is 'list' or '':
+        return {'ID': info_for_quote[0],
+                'Author': info_for_quote[1],
+                'Book title': info_for_quote[2],
+                'Quote': info_for_quote[3]
+                }
+    elif isinstance(info_for_quote, dict):
+        return {'ID': info_for_quote['ID'],
+                'Author': info_for_quote['Author'],
+                'Book title': info_for_quote['Book title'],
+                'Quote': info_for_quote['Quote']
+                }
+    else:
+        return "Error"
+
 
 
 def return_list_result(checklist):
