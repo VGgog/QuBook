@@ -17,10 +17,10 @@ class DateBaseA:
         self.cursor.execute(f'SELECT * FROM QuoBook WHERE QuoBook.Id = %s', (quote_id,))
         return self.cursor.fetchall()[0]
 
-    def write_new_quote_on_table(self, count, quot):
+    def write_new_quote_on_table(self, quote_info):
         """Записывает новую цитату в таблицу QueBook"""
         self.cursor.execute("""INSERT INTO QuoBook(id, author, "book name", quote) VALUES (%s, %s, %s, %s)""",
-                                   (count, quot['Author'], quot['Book title'], quot['Quote']))
+                                   (quote_info['ID'], quote_info['Author'], quote_info['Book title'], quote_info['Quote']))
         return self.connection.commit()
 
     def change_quote_in_table(self):

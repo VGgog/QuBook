@@ -64,19 +64,17 @@ def returns_a_specific_quote():
 
 @app.route('/api/post_json', methods=['POST'])
 def requests_json():
+    """POST метод, записывает цитату, отправленную пользователем в таблицу QuoBook"""
     request_data = request.get_json()
 
     if 'Author' and 'Book title' and 'Quote' in request_data:
-        #db.write_new_quote_on_table(count=db.count_id() + 1, quot=request_data)
-        try:
-            db.write_new_quote_on_table(294, quot=request_data)
-            print(2)
-        except Exception as e:
-            print(e)
-            print(1)
-        request_data.setdefault('ID', 294)
-        return give_a_nice_quote(request_data)
-    return "Error"
+
+        request_data.setdefault('ID', db.count_id() + 1)
+        db.write_new_quote_on_table(request_data)
+
+        return give_a_nice_quote(request_data), 200
+
+    return "Error, quote not write in db table"
 
 
 @app.route('/api/del_quote', methods=['DELETE'])

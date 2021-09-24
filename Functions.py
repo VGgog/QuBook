@@ -8,7 +8,7 @@ db = DateBaseA()
 
 def give_a_nice_quote(info_for_quote):
     """Возвращает цитату в виде списка"""
-    if type(info_for_quote) is 'list' or '':
+    if isinstance(info_for_quote, list) or isinstance(info_for_quote, tuple):
         return {'ID': info_for_quote[0],
                 'Author': info_for_quote[1],
                 'Book title': info_for_quote[2],
