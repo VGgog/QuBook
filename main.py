@@ -3,7 +3,7 @@ import flask
 from flask import request, jsonify
 
 from db_admonistrate import DateBaseA
-from Functions import give_a_nice_quote, return_list_result, return_sorted_quotes
+import functions as func
 
 db = DateBaseA()
 
@@ -39,27 +39,27 @@ def returns_a_specific_quote():
             return 'Error, id not faithful'
 
         if quote_id <= db.count_id():
-            return jsonify(give_a_nice_quote(db.read_quotes_in_table(quote_id))), 200
+            return jsonify(func.give_a_nice_quote(db.read_quotes_in_table(quote_id))), 200
         else:
             return 'Error, quote not found', 404
 
     elif 'author' in request.args:
         # Возвращает отсортированные по автору цитаты
         author = request.args.get('author')
-        return return_list_result(return_sorted_quotes(count, author, index=1))
+        return func.return_list_result(func.return_sorted_quotes(count, author, index=1))
 
     elif 'book_title' in request.args:
         # Возвращает отсортированные по названию книги цитаты
         book_title = request.args.get('book_title')
-        return return_list_result(return_sorted_quotes(count, book_title, index=2))
+        return func.return_list_result(func.return_sorted_quotes(count, book_title, index=2))
 
     else:
         # Возвращает случайные цитаты(количество задаёт пользователь)
         quotes = []
         while len(quotes) < count:
-            quotes.append(give_a_nice_quote(db.read_quotes_in_table(random.randint(1, db.count_id()))))
+            quotes.append(func.give_a_nice_quote(db.read_quotes_in_table(random.randint(1, db.count_id()))))
 
-        return return_list_result(quotes)
+        return func.return_list_result(quotes)
 
 
 @app.route('/api/quobook/new', methods=['POST'])
@@ -70,7 +70,7 @@ def add_a_new_quote():
     if 'Author' and 'Book title' and 'Quote' in request_data:
         request_data.setdefault('ID', db.count_id() + 1)
         db.write_new_quote_on_table(request_data)
-        return give_a_nice_quote(request_data), 200
+        return func.give_a_nice_quote(request_data), 200
 
     return "Error, quote not write in db table"
 
@@ -86,7 +86,7 @@ def delete_a_quote():
             return 'Error, id not faithful'
 
         try:
-            quote = give_a_nice_quote(db.read_quotes_in_table(quote_id))
+            quote = func.give_a_nice_quote(db.read_quotes_in_table(quote_id))
             db.delete_quote(quote_id)
         except (TypeError, IndexError):
             return "Error, this quote not found"
