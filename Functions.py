@@ -42,3 +42,4 @@ def return_sorted_quotes(count, sorting, index):
                 sorted_quotes.append(give_a_nice_quote(information_for_quote))
 
     return sorted_quotes
+

@@ -27,7 +27,7 @@ def returns_a_specific_quote():
         try:
             count = int(request.args['count'])
         except ValueError:
-            return 'Error'
+            return 'Error, count not faithful'
     else:
         count = 1
 
@@ -36,7 +36,7 @@ def returns_a_specific_quote():
         try:
             quote_id = int(request.args['id'])
         except ValueError:
-            return 'Error'
+            return 'Error, id not faithful'
 
         if quote_id <= db.count_id():
             return jsonify(give_a_nice_quote(db.read_quotes_in_table(quote_id))), 200
@@ -63,7 +63,7 @@ def returns_a_specific_quote():
 
 
 @app.route('/api/quobook/new', methods=['POST'])
-def requests_json():
+def add_a_new_quote():
     """POST метод, записывает цитату, отправленную пользователем в таблицу QuoBook"""
     request_data = request.get_json()
 
@@ -83,7 +83,7 @@ def delete_a_quote():
         try:
             quote_id = int(request.args['id'])
         except ValueError:
-            return 'Error'
+            return 'Error, id not faithful'
 
         try:
             quote = give_a_nice_quote(db.read_quotes_in_table(quote_id))
