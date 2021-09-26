@@ -1,14 +1,15 @@
 # Модуль с функциями
 
 from flask import jsonify
-from db_admonistrate import DateBaseA
+from db_administration import DateBaseA
 
 db = DateBaseA()
 
 
 def give_a_nice_quote(info_for_quote):
     """Возвращает цитату в виде списка"""
-    if isinstance(info_for_quote, list) or isinstance(info_for_quote, tuple):
+    if isinstance(info_for_quote[0], list) or isinstance(info_for_quote[0], tuple):
+        info_for_quote = info_for_quote[0] 
         return {'ID': info_for_quote[0],
                 'Author': info_for_quote[1],
                 'Book title': info_for_quote[2],
