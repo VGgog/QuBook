@@ -15,7 +15,7 @@ class DateBaseA:
     def read_quotes_in_table(self, quote_id):
         """Возвращает строку из таблицы QueBook"""
         self.cursor.execute('SELECT * FROM QuoBook WHERE QuoBook.Id = %s', (quote_id,))
-        return self.cursor.fetchall()[0]
+        return self.cursor.fetchall()
 
     def write_new_quote_on_table(self, quote_info):
         """Записывает новую цитату в таблицу QueBook"""
