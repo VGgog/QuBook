@@ -2,7 +2,7 @@ import random
 import flask
 from flask import request, jsonify
 
-from db_admonistrate import DateBaseA
+from db_administration import DateBaseA
 import functions as func
 
 db = DateBaseA()
@@ -38,10 +38,11 @@ def returns_a_specific_quote():
         except ValueError:
             return 'Error, id not faithful'
 
-        if quote_id <= db.count_id():
+        if db.read_quotes_in_table(quote_id):
             return jsonify(func.give_a_nice_quote(db.read_quotes_in_table(quote_id))), 200
         else:
             return 'Error, quote not found', 404
+
 
     elif 'author' in request.args:
         # Возвращает отсортированные по автору цитаты
@@ -57,7 +58,9 @@ def returns_a_specific_quote():
         # Возвращает случайные цитаты(количество задаёт пользователь)
         quotes = []
         while len(quotes) < count:
-            quotes.append(func.give_a_nice_quote(db.read_quotes_in_table(random.randint(1, db.count_id()))))
+            quote_id = random.randint(1, db.count_id())
+            if db.read_quotes_in_table(quote_id):
+                quotes.append(func.give_a_nice_quote(db.read_quotes_in_table(random.randint(1, db.count_id()))))
 
         return func.return_list_result(quotes)
 
