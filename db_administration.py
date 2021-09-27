@@ -23,8 +23,12 @@ class DateBaseA:
                                    (quote_info['ID'], quote_info['Author'], quote_info['Book title'], quote_info['Quote']))
         return self.connection.commit()
 
-    def change_quote_in_table(self):
-        pass
+    def update_quote_in_table(self, quote_info, quote_id):
+        """"""
+        self.cursor.execute(f"""UPDATE QuoBook
+                                SET author= %s, "book name" = %s, "quote" = %s
+                                WHERE QuoBook.Id = %s""",
+                            (quote_info['Author'], quote_info['Book title'], quote_info['Quote'], quote_id))
 
     def delete_quote(self, quote_id):
         """Удаляет нужную строку из таблицы QueBook"""
