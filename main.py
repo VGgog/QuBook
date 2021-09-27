@@ -105,7 +105,6 @@ def delete_a_quote():
 def update_or_add_new_quote():
     """"""
     request_data = request.get_json()
-    print(request_data)
 
     if 'ID' in request_data:
         if 'Author' in request_data:
@@ -117,14 +116,13 @@ def update_or_add_new_quote():
                         return 'Error, id not faithful'
 
                     if db.read_quotes_in_table(quote_id):
-                        pass
-
+                        db.update_quote_in_table(request_data, quote_id)
+                        return request_data
                     else:
                         db.write_new_quote_on_table(request_data)
                         return request_data
 
     else:
-
         return 'Put, Error'
 
 
