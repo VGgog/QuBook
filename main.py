@@ -70,10 +70,12 @@ def add_a_new_quote():
     """POST метод, записывает цитату, отправленную пользователем в таблицу QuoBook"""
     request_data = request.get_json()
 
-    if 'Author' and 'Book title' and 'Quote' in request_data:
-        request_data.setdefault('ID', db.count_id() + 1)
-        db.write_new_quote_on_table(request_data)
-        return func.give_a_nice_quote(request_data), 200
+    if 'Author' in request_data:
+        if 'Book title' in request_data:
+            if 'Quote' in request_data:
+                request_data.setdefault('ID', db.count_id() + 1)
+                db.write_new_quote_on_table(request_data)
+                return func.give_a_nice_quote(request_data), 200
 
     return "Error, quote not write in db table"
 
@@ -97,6 +99,33 @@ def delete_a_quote():
         return quote
 
     return "Error, quote not found"
+
+
+@app.route('/api/quobook/put', methods=['PUT'])
+def update_or_add_new_quote():
+    """"""
+    request_data = request.get_json()
+    print(request_data)
+
+    if 'ID' in request_data:
+        if 'Author' in request_data:
+            if 'Book title' in request_data:
+                if 'Quote' in request_data:
+                    try:
+                        quote_id = int(request_data['ID'])
+                    except ValueError:
+                        return 'Error, id not faithful'
+
+                    if db.read_quotes_in_table(quote_id):
+                        pass
+
+                    else:
+                        db.write_new_quote_on_table(request_data)
+                        return request_data
+
+    else:
+
+        return 'Put, Error'
 
 
 app.run()
