@@ -7,7 +7,7 @@ db = DateBaseA()
 
 
 def give_a_nice_quote(info_for_quote):
-    """Возвращает цитату в виде списка"""
+    """Возвращает цитату в виде словаря"""
     if info_for_quote:
         if isinstance(info_for_quote, list) or isinstance(info_for_quote, tuple):
             info_for_quote = info_for_quote[0]
@@ -46,11 +46,22 @@ def return_sorted_quotes(count, sorting, index):
 
 
 def check_correct_data(data):
-    """"""
+    """Проверяет наличие ключей: Author, Book title, Quote, в словаре."""
     if 'Author' in data:
         if 'Book title' in data:
             if 'Quote' in data:
                 return True
 
     return False
+
+
+def transforms_int_in_str(transform_data):
+    """Строку преобразует в число"""
+    try:
+        quote_id = int(transform_data)
+    except ValueError:
+        return False
+
+    return quote_id
+
 
