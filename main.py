@@ -23,25 +23,23 @@ def returns_a_specific_quote():
     """Возвращает определённую цитату, которую задал пользователь"""
     if request.args.get('count'):
         # Определяет количество цитат, которые нужны пользователю
-
-        try:
-            count = int(request.args['count'])
-        except ValueError:
-            return 'Error, count not faithful'
+        if func.transforms_int_in_str(request.args['count']):
+            count = func.transforms_int_in_str(request.args['count'])
+        else:
+            return "Error, count not faithful"
     else:
         count = 1
 
     if 'id' in request.args:
-        # Возвращает цитату по id
-        try:
-            quote_id = int(request.args['id'])
-        except ValueError:
-            return 'Error, id not faithful'
+        quote_id = func.transforms_int_in_str(request.args['id'])
+        if quote_id:
 
-        if db.read_quotes_in_table(quote_id):
-            return jsonify(func.give_a_nice_quote(db.read_quotes_in_table(quote_id))), 200
-        else:
-            return 'Error, quote not found', 404
+            if db.read_quotes_in_table(quote_id):
+                return jsonify(func.give_a_nice_quote(db.read_quotes_in_table(quote_id))), 200
+            else:
+                return 'Error, quote not found', 404
+
+        return "Error, id not faithful"
 
     elif 'author' in request.args:
         # Возвращает отсортированные по автору цитаты
@@ -81,41 +79,39 @@ def add_a_new_quote():
 def delete_a_quote():
     """DELETE-methods, удаляет цитату по id"""
     if 'id' in request.args:
-        # Возвращает цитату по id
-        try:
-            quote_id = int(request.args['id'])
-        except ValueError:
-            return 'Error, id not faithful'
 
-        try:
-            quote = func.give_a_nice_quote(db.read_quotes_in_table(quote_id))
-            db.delete_quote(quote_id)
-        except (TypeError, IndexError):
-            return "Error, this quote not found"
+        quote_id = func.transforms_int_in_str(request.args['id'])
+        if quote_id:
 
-        return quote
+            try:
+                quote = func.give_a_nice_quote(db.read_quotes_in_table(quote_id))
+                db.delete_quote(quote_id)
+            except (TypeError, IndexError):
+                return "Error, this quote not found"
+
+            return quote
 
     return "Error, quote not found"
 
 
 @app.route('/api/quobook/put', methods=['PUT'])
 def update_or_add_new_quote():
-    """"""
+    """PUT-methods, добавляет если такого id в базе данных нет, иначе обновляет эту цитату"""
     request_data = request.get_json()
 
     if 'ID' in request_data:
-        try:
-            quote_id = int(request_data['ID'])
-        except ValueError:
-            return 'Error, id not faithful'
+        quote_id = func.transforms_int_in_str(request_data['ID'])
+        if quote_id:
 
-        if func.check_correct_data(request_data):
+            if func.check_correct_data(request_data):
 
-            if db.read_quotes_in_table(quote_id):
-                db.update_quote_in_table(request_data, quote_id)
-            else:
-                db.write_new_quote_on_table(request_data)
-            return request_data
+                if db.read_quotes_in_table(quote_id):
+                    db.update_quote_in_table(request_data, quote_id)
+                else:
+                    db.write_new_quote_on_table(request_data)
+                return request_data
+        else:
+            return "Error, id not faithful"
 
     else:
         return 'Put, Error'
